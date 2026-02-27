@@ -67,6 +67,13 @@ checks:
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Deterministic evals are source-of-truth merge gates.
 - Avoid network-dependent assertions unless explicitly required.
 - Keep commands idempotent and non-destructive.
@@ -74,6 +81,9 @@ checks:
 - Treat missing decision rationale artifacts as deterministic failure.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 test -f evals/deterministic/manifest.yaml

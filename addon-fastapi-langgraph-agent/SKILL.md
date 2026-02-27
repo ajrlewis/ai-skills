@@ -96,6 +96,13 @@ async def create_run(payload: AgentRunRequest) -> AgentRunResponse:
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Restrict agent tools to explicit allow-list.
 - Enforce max step count and execution timeout.
 - Do not allow arbitrary shell/network tools unless explicitly approved.
@@ -103,6 +110,9 @@ async def create_run(payload: AgentRunRequest) -> AgentRunResponse:
 - Keep deterministic fallbacks for provider/tool failures.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 uv run ruff check .

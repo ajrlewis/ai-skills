@@ -51,7 +51,7 @@ cd {{PROJECT_NAME}}
 2. Install stack dependencies:
 ```bash
 bun add @prisma/client pg zod
-bun add -d prisma vitest @vitest/coverage-v8 jsdom @types/node
+bun add -d prisma vitest @vitest/coverage-v8 jsdom @types/node eslint-plugin-jsdoc
 ```
 
 3. Initialize Prisma:
@@ -65,6 +65,7 @@ bunx prisma init --datasource-provider postgresql
 - `.dockerignore`
 - `docker-compose.yml`
 - `vitest.config.ts`
+- `eslint.config.mjs` (extend generated Next config with JSDoc rules for exported symbols)
 - `.github/workflows/ci.yml`
 - `src/lib/prisma.ts`
 - `src/services/vector-service.ts`
@@ -182,6 +183,47 @@ export default defineConfig({
 });
 ```
 
+### `eslint.config.mjs` (extend generated config)
+```javascript
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { FlatCompat } from "@eslint/eslintrc";
+import jsdoc from "eslint-plugin-jsdoc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    plugins: { jsdoc },
+    rules: {
+      "jsdoc/require-jsdoc": [
+        "error",
+        {
+          contexts: [
+            "ExportNamedDeclaration > FunctionDeclaration",
+            "ExportDefaultDeclaration > FunctionDeclaration",
+            "ExportNamedDeclaration > ClassDeclaration",
+            "ExportNamedDeclaration > VariableDeclaration > VariableDeclarator[init.type='ArrowFunctionExpression']",
+          ],
+        },
+      ],
+      "jsdoc/require-description": "error",
+      "jsdoc/require-param": "off",
+      "jsdoc/require-returns": "off",
+    },
+  },
+];
+
+export default eslintConfig;
+```
+
 ### `.github/workflows/ci.yml`
 ```yaml
 name: ci
@@ -203,6 +245,8 @@ jobs:
         run: bunx prisma generate
       - name: Lint
         run: bun run lint
+      - name: Lint Docs
+        run: bunx eslint "src/**/*.{ts,tsx}" --max-warnings=0
       - name: Test
         run: bunx vitest run --coverage
       - name: Build
@@ -251,6 +295,13 @@ export async function searchEmbeddings(queryEmbedding: number[], limit = 10) {
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Never use `@latest` for scaffold or runtime-critical dependencies unless user asks for latest.
 - Do not interpolate raw SQL strings; use `Prisma.sql` parameterization.
 - Keep Prisma migration path reproducible: schema checked in, migrations checked in.
@@ -260,9 +311,13 @@ export async function searchEmbeddings(queryEmbedding: number[], limit = 10) {
 
 ## Validation Checklist
 
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
+
 Run and fix failures before finishing:
 ```bash
 bun run lint
+bunx eslint "src/**/*.{ts,tsx}" --max-warnings=0
 bunx vitest run --coverage
 bunx prisma validate
 bun run build
@@ -273,6 +328,7 @@ docker compose ps
 `local-no-docker` (`NO_DOCKER=yes`):
 ```bash
 bun run lint
+bunx eslint "src/**/*.{ts,tsx}" --max-warnings=0
 bunx vitest run --coverage
 bunx prisma validate
 bun run build

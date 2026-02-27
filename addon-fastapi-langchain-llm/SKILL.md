@@ -99,6 +99,13 @@ async def chat(payload: ChatRequest) -> ChatResponse:
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Validate request size/tokens before model invocation.
 - Never log secrets or raw auth headers.
 - Enforce model/provider selection from allow-list.
@@ -106,6 +113,9 @@ async def chat(payload: ChatRequest) -> ChatResponse:
 - For streaming, gracefully terminate on client disconnect.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 uv run ruff check .

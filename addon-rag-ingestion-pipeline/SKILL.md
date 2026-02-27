@@ -107,6 +107,13 @@ def chunk_text(text: str, chunk_size: int = 1000, overlap: int = 150) -> list[st
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Deduplicate ingestion by checksum to keep re-runs idempotent.
 - Store embedding model/version so re-indexing can be reasoned about.
 - Never interpolate user queries into raw SQL vector search.
@@ -114,6 +121,9 @@ def chunk_text(text: str, chunk_size: int = 1000, overlap: int = 150) -> list[st
 - Preserve citation metadata for retrieval (`source_path`, section, page, row id).
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 uv run {{PROJECT_NAME}} rag-ingest --source ./data/inbox --formats pdf,markdown

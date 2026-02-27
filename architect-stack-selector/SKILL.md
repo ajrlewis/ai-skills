@@ -203,6 +203,13 @@ LLM judge evals:
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Prefer the smallest skill set that satisfies requirements.
 - Do not select multiple base architects unless user explicitly requests a multi-repo architecture.
 - `architect-nostr-intent-router` is a protocol control-plane architect and may be combined with one base architect.

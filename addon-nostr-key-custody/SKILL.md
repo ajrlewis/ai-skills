@@ -73,6 +73,13 @@ export interface NostrSigner {
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Never send private keys to server routes.
 - Never place key material in `NEXT_PUBLIC_*` env vars.
 - Treat local encrypted mode as convenience, not hardware-grade custody.
@@ -80,6 +87,9 @@ export interface NostrSigner {
 - Wipe decrypted key material from memory on logout/lock.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 bun run lint

@@ -61,12 +61,22 @@ Pass threshold: 0.75
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Never replace deterministic gates with judge scores.
 - Keep prompts/rubrics versioned in repo for auditability.
 - Record model/version and timestamp for each run.
 - Surface uncertainty as explicit notes, not silent pass.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 test -f evals/judge/rubric.md

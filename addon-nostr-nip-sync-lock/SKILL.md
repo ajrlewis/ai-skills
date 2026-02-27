@@ -42,12 +42,22 @@ python3 scripts/nostr/sync_nips_lock.py --nips 1,7,19,21,23,65 --out docs/nostr/
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Pull NIP sources only from the official `nostr-protocol/nips` repository.
 - Keep lock deterministic and machine-readable.
 - Never auto-merge lock updates without human review.
 - Treat deprecated/legacy NIP detections as explicit review items.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 test -f scripts/nostr/sync_nips_lock.py

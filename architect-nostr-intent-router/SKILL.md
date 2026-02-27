@@ -118,12 +118,22 @@ Justification summary:
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Do not guess broad NIP support without explicit product intent.
 - Keep NIP set minimal and capability-driven.
 - Treat legacy compatibility as explicit risk acceptance.
 - Ensure NIP profile docs, code profile, and lockfile strategy are consistent.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 test -f docs/nostr/NIP_REQUIREMENTS.md

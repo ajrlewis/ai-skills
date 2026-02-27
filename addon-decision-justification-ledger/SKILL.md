@@ -68,12 +68,22 @@ REVIEW_BUNDLE/DECISION_TRACE.md
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - No non-trivial decision without rationale.
 - Do not use generic claims like "best practice" as a sole justification.
 - If alternatives were not considered, explicitly state why only one path is viable.
 - Missing decision entries are merge blockers in production-default mode.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 test -f docs/DECISION_LOG.md

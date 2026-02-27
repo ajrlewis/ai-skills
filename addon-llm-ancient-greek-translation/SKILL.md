@@ -63,12 +63,22 @@ export type AncientGreekResponse = z.infer<typeof AncientGreekResponseSchema>;
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - API keys stay server-only (`OPENAI_API_KEY`, etc.).
 - Do not auto-publish untranslated or invalid translation payloads.
 - Preserve user intent and meaning; expose translation notes for user review.
 - Provide explicit fallback behavior when provider is unavailable.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 bun run lint

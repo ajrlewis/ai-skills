@@ -61,11 +61,12 @@ src/app/globals.css
 
 2. Add test stack:
 ```bash
-bun add -d vitest @vitest/coverage-v8 jsdom @types/node
+bun add -d vitest @vitest/coverage-v8 jsdom @types/node eslint-plugin-jsdoc
 ```
 
 3. Add project files:
 - `vitest.config.ts`
+- `eslint.config.mjs` (extend generated Next config with JSDoc rules for exported symbols)
 - `Dockerfile`
 - `.dockerignore`
 - `docker-compose.yml`
@@ -105,6 +106,47 @@ export default defineConfig({
     },
   },
 });
+```
+
+### `eslint.config.mjs` (extend generated config)
+```javascript
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { FlatCompat } from "@eslint/eslintrc";
+import jsdoc from "eslint-plugin-jsdoc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    plugins: { jsdoc },
+    rules: {
+      "jsdoc/require-jsdoc": [
+        "error",
+        {
+          contexts: [
+            "ExportNamedDeclaration > FunctionDeclaration",
+            "ExportDefaultDeclaration > FunctionDeclaration",
+            "ExportNamedDeclaration > ClassDeclaration",
+            "ExportNamedDeclaration > VariableDeclaration > VariableDeclarator[init.type='ArrowFunctionExpression']",
+          ],
+        },
+      ],
+      "jsdoc/require-description": "error",
+      "jsdoc/require-param": "off",
+      "jsdoc/require-returns": "off",
+    },
+  },
+];
+
+export default eslintConfig;
 ```
 
 ### `Dockerfile`
@@ -171,6 +213,7 @@ jobs:
           bun-version: "1.1.38"
       - run: bun install --frozen-lockfile
       - run: bun run lint
+      - run: bunx eslint "src/**/*.{ts,tsx}" --max-warnings=0
       - run: bunx vitest run --coverage
       - run: bun run build
       - uses: docker/setup-buildx-action@v3
@@ -185,6 +228,13 @@ jobs:
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Avoid `@latest` for runtime-critical scaffold dependencies.
 - Keep browser-only APIs out of server components.
 - Validate environment variables at startup.
@@ -194,8 +244,12 @@ jobs:
 
 ## Validation Checklist
 
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
+
 ```bash
 bun run lint
+bunx eslint "src/**/*.{ts,tsx}" --max-warnings=0
 bunx vitest run --coverage
 bun run build
 test -f bun.lockb
@@ -205,6 +259,7 @@ docker compose up -d --build
 `local-no-docker` (`NO_DOCKER=yes`):
 ```bash
 bun run lint
+bunx eslint "src/**/*.{ts,tsx}" --max-warnings=0
 bunx vitest run --coverage
 bun run build
 ```

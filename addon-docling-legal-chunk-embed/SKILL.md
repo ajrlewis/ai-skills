@@ -102,6 +102,13 @@ def split_legal_clauses(markdown_text: str, max_chars: int = 1400) -> list[str]:
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Preserve legal ordering and section labels; do not reorder clauses.
 - Keep extracted markdown for auditability before embedding.
 - Include deterministic clause ids to support re-ingestion idempotency.
@@ -109,6 +116,9 @@ def split_legal_clauses(markdown_text: str, max_chars: int = 1400) -> list[str]:
 - Keep PII handling configurable; redact only when explicitly required.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 uv run {{PROJECT_NAME}} legal-extract --source data/inbox/legal --out data/processed/legal

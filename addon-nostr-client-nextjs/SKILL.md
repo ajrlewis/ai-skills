@@ -223,6 +223,13 @@ export async function POST(req: Request) {
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Never store private keys in `NEXT_PUBLIC_*` vars.
 - Keep signing in browser when possible (`window.nostr` / NIP-07).
 - Use timeout/retry boundaries for relay connections.
@@ -230,6 +237,9 @@ export async function POST(req: Request) {
 - Sanitize and bound user-controlled filters to prevent abuse.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 bun run lint

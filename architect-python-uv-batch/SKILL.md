@@ -237,6 +237,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - run: uv sync --frozen --dev
       - run: uv run ruff check .
+      - run: uv run ruff check . --select D
       - run: uv run mypy src
       - run: uv run pytest -q
       - uses: docker/setup-buildx-action@v3
@@ -251,6 +252,13 @@ jobs:
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Keep batch jobs idempotent; output paths must be safe to re-run.
 - Make output names collision-safe across formats and paths (include extension and a stable suffix/hash).
 - Never commit secrets; use `.env` and environment variables.
@@ -261,8 +269,12 @@ jobs:
 
 ## Validation Checklist
 
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
+
 ```bash
 uv run ruff check .
+uv run ruff check . --select D
 uv run mypy src
 uv run pytest -q
 uv run {{PROJECT_NAME}} ingest-pdf
@@ -272,6 +284,7 @@ docker compose run --rm app
 `local-no-docker` (`NO_DOCKER=yes`):
 ```bash
 uv run ruff check .
+uv run ruff check . --select D
 uv run mypy src
 uv run pytest -q
 uv run {{PROJECT_NAME}} ingest-pdf

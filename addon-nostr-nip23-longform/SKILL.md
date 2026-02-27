@@ -79,12 +79,22 @@ export function buildNip23Tags(draft: LongFormDraft): string[][] {
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Do not publish malformed `kind`/tag combinations.
 - Enforce content bounds (`title`, `summary`, `body`) before signing.
 - Keep private key handling out of API routes by default.
 - Never store secrets in `NEXT_PUBLIC_*`.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 bun run lint

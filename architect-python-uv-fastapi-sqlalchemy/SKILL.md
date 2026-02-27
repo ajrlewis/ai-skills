@@ -226,6 +226,8 @@ jobs:
         run: uv sync --frozen --dev
       - name: Ruff
         run: uv run ruff check .
+      - name: Ruff Docstrings
+        run: uv run ruff check . --select D
       - name: Mypy
         run: uv run mypy src
       - name: Pytest
@@ -242,6 +244,13 @@ jobs:
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Keep async DB stack consistent (`sqlalchemy.ext.asyncio` + `asyncpg`).
 - Never hardcode secrets; use environment variables and `.env`.
 - Ensure Alembic migrations are generated and committed.
@@ -251,9 +260,13 @@ jobs:
 
 ## Validation Checklist
 
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
+
 Run and fix failures before finishing:
 ```bash
 uv run ruff check .
+uv run ruff check . --select D
 uv run mypy src
 uv run pytest -q
 uv run alembic upgrade head
@@ -264,6 +277,7 @@ docker compose ps
 `local-no-docker` (`NO_DOCKER=yes`):
 ```bash
 uv run ruff check .
+uv run ruff check . --select D
 uv run mypy src
 uv run pytest -q
 uv run alembic upgrade head

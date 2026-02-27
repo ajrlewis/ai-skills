@@ -72,12 +72,22 @@ docs/DOMAIN_DECISIONS.md
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Do not change security-critical semantics for stylistic reasons.
 - Do not rewrite internal identifiers when that would break compatibility.
 - Keep naming consistent across UI, docs, and prompts.
 - Surface ambiguous term mappings as explicit review items.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 test -f docs/DOMAIN_LANGUAGE.md

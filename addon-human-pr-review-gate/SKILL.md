@@ -83,6 +83,13 @@ REVIEW_BUNDLE/* @your-org/security-reviewers
 
 ## Guardrails
 
+- Documentation contract for generated code:
+  - Python: write module docstrings and docstrings for public classes, methods, and functions.
+  - Next.js/TypeScript: write JSDoc for exported components, hooks, utilities, and route handlers.
+  - Add concise rationale comments only for non-obvious logic, invariants, or safety constraints.
+  - Apply this contract even when using template snippets below; expand templates as needed.
+
+
 - Do not rely on “run app and eyeball” as sole verification.
 - Do not run untrusted PR code with elevated secrets/permissions.
 - Keep review bundle concise; optimize for <10 minute human scan.
@@ -91,6 +98,9 @@ REVIEW_BUNDLE/* @your-org/security-reviewers
 - Treat missing decision rationale as a merge blocker.
 
 ## Validation Checklist
+
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
 
 ```bash
 test -f REVIEW_BUNDLE/SUMMARY.md

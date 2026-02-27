@@ -95,6 +95,9 @@ export default function FileDropzone({ onFilesAccepted, accept }: FileDropzonePr
 
 ## Validation Checklist
 
+- Confirm generated code includes required docstrings/JSDoc and rationale comments for non-obvious logic.
+
+
 ```bash
 bun run lint
 bun run build
