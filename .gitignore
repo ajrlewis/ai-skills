@@ -1,0 +1,7 @@
+# Local test scaffolds and generated project outputs
+test-output/
+
+# OS/editor noise
+.DS_Store
+*.swp
+*.swo
