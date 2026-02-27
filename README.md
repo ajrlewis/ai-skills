@@ -39,8 +39,11 @@ Add-on skills:
 - `addon-nostr-key-custody`
 - `addon-nostr-nip23-longform`
 - `addon-llm-ancient-greek-translation`
-- `addon-fastapi-langchain-llm`
-- `addon-fastapi-langgraph-agent`
+- `addon-llm-translation`
+- `addon-langchain-llm`
+- `addon-langgraph-agent`
+- `addon-google-agent-dev-kit`
+- `addon-vercel-ai-labs`
 
 Legacy (not selected by router by default):
 - `addon-rag-pdf-pipeline`
@@ -74,6 +77,11 @@ npx skills add ajrlewis/ai-skills --skill addon-decision-justification-ledger
 npx skills add ajrlewis/ai-skills --skill addon-domain-semantic-adaptation
 npx skills add ajrlewis/ai-skills --skill addon-deterministic-eval-suite
 npx skills add ajrlewis/ai-skills --skill addon-human-pr-review-gate
+npx skills add ajrlewis/ai-skills --skill addon-llm-translation
+npx skills add ajrlewis/ai-skills --skill addon-langchain-llm
+npx skills add ajrlewis/ai-skills --skill addon-langgraph-agent
+npx skills add ajrlewis/ai-skills --skill addon-google-agent-dev-kit
+npx skills add ajrlewis/ai-skills --skill addon-vercel-ai-labs
 ```
 
 Eval pair (deterministic + LLM judge):

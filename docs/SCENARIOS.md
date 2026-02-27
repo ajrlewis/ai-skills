@@ -13,9 +13,19 @@ Production note:
 - Python legal PDF clause RAG worker:
 `architect-python-uv-batch` + `addon-rag-ingestion-pipeline` + `addon-docling-legal-chunk-embed`
 - Python API + LangChain LLM routes:
-`architect-python-uv-fastapi-sqlalchemy` + `addon-fastapi-langchain-llm`
+`architect-python-uv-fastapi-sqlalchemy` + `addon-langchain-llm`
 - Python API + LangGraph agent workflow:
-`architect-python-uv-fastapi-sqlalchemy` + `addon-fastapi-langgraph-agent`
+`architect-python-uv-fastapi-sqlalchemy` + `addon-langgraph-agent`
+- Cross-architecture LLM translation:
+`architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-llm-translation`
+- Cross-architecture LangChain LLM routes:
+`architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-langchain-llm`
+- Cross-architecture LangGraph agent workflow:
+`architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-langgraph-agent`
+- Cross-architecture Google ADK agent workflow:
+`architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-google-agent-dev-kit`
+- Next.js Vercel AI Labs workflow:
+`architect-nextjs-bun-app` + `addon-vercel-ai-labs`
 - Next.js Nostr client:
 `architect-nextjs-bun-app` + `architect-nostr-intent-router` + `addon-nostr-client-nextjs` + `addon-nostr-nip-profile-selector`
 - Next.js Nostr social feed client:
@@ -58,11 +68,11 @@ Run validation and report outcomes.
 ### FastAPI + LangChain LLM
 
 ```bash
-npx skills add ajrlewis/ai-skills --skill architect-python-uv-fastapi-sqlalchemy --skill addon-fastapi-langchain-llm
+npx skills add ajrlewis/ai-skills --skill architect-python-uv-fastapi-sqlalchemy --skill addon-langchain-llm
 ```
 
 ```text
-Use architect-python-uv-fastapi-sqlalchemy and addon-fastapi-langchain-llm.
+Use architect-python-uv-fastapi-sqlalchemy and addon-langchain-llm.
 Add `/v1/llm/chat` with typed request/response, provider/model configuration, and timeout boundaries.
 Mode: production-default with containerized validation.
 ```
@@ -70,13 +80,73 @@ Mode: production-default with containerized validation.
 ### FastAPI + LangGraph agent
 
 ```bash
-npx skills add ajrlewis/ai-skills --skill architect-python-uv-fastapi-sqlalchemy --skill addon-fastapi-langgraph-agent
+npx skills add ajrlewis/ai-skills --skill architect-python-uv-fastapi-sqlalchemy --skill addon-langgraph-agent
 ```
 
 ```text
-Use architect-python-uv-fastapi-sqlalchemy and addon-fastapi-langgraph-agent.
+Use architect-python-uv-fastapi-sqlalchemy and addon-langgraph-agent.
 Add stateful agent run endpoints with checkpointing, step limits, and run telemetry.
 Mode: production-default with containerized validation.
+```
+
+### Cross-architecture LLM translation
+
+```bash
+npx skills add ajrlewis/ai-skills --skill architect-nextjs-bun-app --skill addon-llm-translation
+```
+
+```text
+Use architect-nextjs-bun-app and addon-llm-translation.
+Add a server-side translation route with typed source/target language contract, provider fallback behavior, and explicit review state before publish.
+Mode: production-default with containerized validation.
+```
+
+### Cross-architecture LangChain LLM
+
+```bash
+npx skills add ajrlewis/ai-skills --skill architect-python-uv-fastapi-sqlalchemy --skill addon-langchain-llm
+```
+
+```text
+Use architect-python-uv-fastapi-sqlalchemy and addon-langchain-llm.
+Add provider-agnostic LangChain chat route(s) with typed request/response, allow-listed provider/model selection, and timeout boundaries.
+Mode: production-default with containerized validation.
+```
+
+### Cross-architecture LangGraph agent
+
+```bash
+npx skills add ajrlewis/ai-skills --skill architect-python-uv-fastapi-sqlalchemy --skill addon-langgraph-agent
+```
+
+```text
+Use architect-python-uv-fastapi-sqlalchemy and addon-langgraph-agent.
+Add agent run endpoints with bounded steps, tool allow-list enforcement, and run telemetry for post-run inspection.
+Mode: production-default with containerized validation.
+```
+
+### Cross-architecture Google ADK agent
+
+```bash
+npx skills add ajrlewis/ai-skills --skill architect-python-uv-fastapi-sqlalchemy --skill addon-google-agent-dev-kit
+```
+
+```text
+Use architect-python-uv-fastapi-sqlalchemy and addon-google-agent-dev-kit.
+Implement ADK-backed agent runs with explicit policy boundaries, bounded execution, and degraded fallback when runtime/provider is unavailable.
+Mode: production-default with containerized validation.
+```
+
+### Next.js Vercel AI Labs
+
+```bash
+npx skills add ajrlewis/ai-skills --skill architect-nextjs-bun-app --skill addon-vercel-ai-labs
+```
+
+```text
+Use architect-nextjs-bun-app and addon-vercel-ai-labs.
+Add an AI SDK-based chat route and UI panel with streaming support, typed request/response schemas, provider/model allow-lists, and bounded timeout behavior.
+Mode: production-default with Docker artifacts.
 ```
 
 ### Next.js Nostr client

@@ -33,8 +33,11 @@ Add-on skills:
 - `addon-nostr-key-custody`
 - `addon-nostr-nip23-longform`
 - `addon-llm-ancient-greek-translation`
-- `addon-fastapi-langchain-llm`
-- `addon-fastapi-langgraph-agent`
+- `addon-llm-translation`
+- `addon-langchain-llm`
+- `addon-langgraph-agent`
+- `addon-google-agent-dev-kit`
+- `addon-vercel-ai-labs`
 
 UI skills:
 - `ui-social-feed-shell`
@@ -124,10 +127,16 @@ UI skills:
   add `addon-nostr-nip23-longform`.
 - If user asks for LLM translation to Ancient Greek (`koine`/`attic`):
   add `addon-llm-ancient-greek-translation`.
-- If user asks for FastAPI app interactions with LLM providers (chat/completions/RAG chain execution):
-  add `addon-fastapi-langchain-llm`.
-- If user asks for multi-step agent behavior (state machine, tool loops, checkpoints):
-  add `addon-fastapi-langgraph-agent`.
+- If user asks for general LLM translation/localization flows:
+  add `addon-llm-translation`.
+- If user asks for LangChain abstractions or LLM provider interactions (chat/completions/RAG chain execution):
+  add `addon-langchain-llm`.
+- If user asks for LangGraph orchestration or multi-step agent behavior (state machine, tool loops, checkpoints):
+  add `addon-langgraph-agent`.
+- If user explicitly asks for Google Agent Development Kit (ADK):
+  add `addon-google-agent-dev-kit`.
+- If user asks for Vercel AI SDK or AI Labs style chat/generation flows:
+  add `addon-vercel-ai-labs`.
 - If user asks for social timeline/feed UI (including X/Twitter-like structure):
   add `ui-social-feed-shell`.
 - If user asks for minimalist/typography-first long-form writing UX:
@@ -156,9 +165,19 @@ UI skills:
 - Full-stack Next + Prisma + vector search:
   `architect-next-prisma-bun-vector` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate` (+ `addon-rag-ingestion-pipeline` if ingest/retrieval pipeline needed)
 - FastAPI with direct LangChain LLM endpoints:
-  `architect-python-uv-fastapi-sqlalchemy` + `addon-fastapi-langchain-llm` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+  `architect-python-uv-fastapi-sqlalchemy` + `addon-langchain-llm` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - FastAPI with LangGraph agent orchestration:
-  `architect-python-uv-fastapi-sqlalchemy` + `addon-fastapi-langgraph-agent` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+  `architect-python-uv-fastapi-sqlalchemy` + `addon-langgraph-agent` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+- Cross-architecture translation flow:
+  `architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-llm-translation` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+- Cross-architecture LangChain LLM flow:
+  `architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-langchain-llm` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+- Cross-architecture LangGraph agent flow:
+  `architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-langgraph-agent` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+- Google ADK agent flow:
+  `architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-google-agent-dev-kit` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+- Next.js Vercel AI Labs flow:
+  `architect-nextjs-bun-app` + `addon-vercel-ai-labs` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 
 ## Output Template
 
