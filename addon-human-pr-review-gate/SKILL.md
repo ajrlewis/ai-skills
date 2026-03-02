@@ -37,6 +37,9 @@ REVIEW_BUNDLE/POLICY_CHECKLIST.md
 ```text
 scripts/review/generate_review_bundle.sh
 ```
+- Copy and adapt this skill's bundled script:
+- `scripts/generate_review_bundle.sh`
+- Place the adapted result in the target project at `scripts/review/generate_review_bundle.sh`.
 - Script should be deterministic and avoid network calls.
 - It should collect:
 - changed files

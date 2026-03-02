@@ -1,11 +1,12 @@
 ---
 name: architect-python-uv-batch
-description: Use when scaffolding production-ready Python uv batch or worker projects with Docker defaults.
+description: Use when scaffolding production-ready Python uv batch or worker projects with Docker required by default.
 ---
 
 # Architect: Python + uv Batch
 
 Use this skill for non-API Python projects that run as CLI or scheduled jobs, especially data/PDF processing pipelines.
+Docker is required by default for this runnable base architect skill. Only allow `NO_DOCKER=yes` when the user explicitly asks for a local-only exception.
 
 ## Inputs
 

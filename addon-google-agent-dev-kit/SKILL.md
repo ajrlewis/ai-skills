@@ -12,11 +12,13 @@ Use this skill when a project needs Google Agent Development Kit based agent wor
 - Works with `architect-python-uv-fastapi-sqlalchemy` and `architect-nextjs-bun-app`.
 - Can be combined with `addon-langgraph-agent` when graph-based execution is also required.
 - Prefer Python-first implementation when both runtime options are viable.
+- Can be combined with `addon-llm-judge-evals`; when used together, declare `google-adk` in `config/skill_manifest.json` so the judge runner can resolve the backend deterministically.
 
 ## Inputs
 
 Collect:
 - `ADK_RUNTIME`: `python` | `nextjs` (default from selected architecture).
+- `ADK_DEFAULT_MODEL`: default model id for ADK-backed runs.
 - `AGENT_GOAL`: one-sentence scope statement.
 - `ALLOW_TOOLS`: explicit list of allowed tools.
 - `MAX_AGENT_STEPS`: default `10`.
@@ -56,6 +58,11 @@ src/app/api/agent/runs/route.ts
 4. Add fallback mode:
 - If ADK provider/runtime is unavailable, return explicit degraded status and retry guidance.
 
+5. If `addon-llm-judge-evals` is also selected:
+- emit `config/skill_manifest.json` with `addon-google-agent-dev-kit` in `addons`
+- declare `"judge_backends": ["google-adk"]` in `capabilities`
+- allow the judge runner to reuse `ADK_DEFAULT_MODEL` when `JUDGE_MODEL` is unset
+
 ## Required Template
 
 ### Agent run status shape
@@ -80,6 +87,7 @@ src/app/api/agent/runs/route.ts
 - Do not expose unrestricted tool execution from public routes.
 - Preserve auditability of agent decisions and failures.
 - Keep degraded behavior explicit and non-silent.
+- If judge evals are enabled, do not silently mix ADK and non-ADK judge implementations; require explicit backend selection when multiple judge-capable addons are present.
 
 ## Validation Checklist
 

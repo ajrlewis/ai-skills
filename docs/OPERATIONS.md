@@ -7,6 +7,7 @@ Default mode is `production-default`:
 - CI must include image build checks.
 - Validation must include containerized checks.
 - Non-trivial decisions must be recorded with explicit rationale.
+- For runnable base architect skills, Docker is required by default and supports both local development and production parity.
 
 Alternative modes:
 - `local-no-docker`: only when user explicitly requests `NO_DOCKER=yes`.
@@ -35,6 +36,70 @@ Mode: production-default (or NO_DOCKER=yes only if explicitly requested).
 Decision visibility: required (no non-trivial decision without rationale).
 Pick the minimal skill set, scaffold now, and run validations.
 ```
+
+## Local Docker Examples
+
+### Batch Worker
+
+```bash
+cd <python-batch-project>
+docker build -t <project-name>:local .
+docker compose up -d --build
+docker compose ps
+docker compose run --rm app
+docker compose logs --tail=100 app
+ls -1 data/processed
+docker compose down
+```
+
+Use this when the scaffold exposes a one-shot worker command such as `ingest-pdf`.
+
+### FastAPI Service
+
+```bash
+cd <fastapi-project>
+docker build -t <project-name>:local .
+docker compose up -d --build
+docker compose ps
+curl http://localhost:8000/healthz
+docker compose exec api sh
+docker compose logs --tail=100 api
+docker compose down
+```
+
+Use this to confirm the API container starts cleanly, the health route responds, and the app shell is reachable for local inspection.
+
+### Next.js Web App
+
+```bash
+cd <nextjs-project>
+docker build -t <project-name>:local .
+docker compose up -d --build
+docker compose ps
+curl http://localhost:3000/
+docker compose exec web sh
+docker compose logs --tail=100 web
+docker compose down
+```
+
+Use this to validate the web container locally before opening the app in a browser.
+
+### Next.js + Prisma + pgvector
+
+```bash
+cd <next-prisma-vector-project>
+docker build -t <project-name>:local .
+docker compose up -d --build
+docker compose ps
+curl http://localhost:3000/
+docker compose exec web sh
+docker compose exec db sh
+docker compose logs --tail=100 web
+docker compose logs --tail=100 db
+docker compose down
+```
+
+Use this to verify both the app and database containers come up locally, the web surface responds, and the Postgres/pgvector service is reachable for schema or migration inspection.
 
 ## Agent Usage
 

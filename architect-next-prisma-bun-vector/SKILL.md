@@ -6,6 +6,7 @@ description: Use when scaffolding full-stack Next.js with Bun, Prisma, Postgres 
 # Architect: Next + Prisma + Bun + pgvector
 
 Use this skill when the user wants a production scaffold for a Next.js app that includes Prisma, vector search support, Dockerized services, and CI quality gates.
+Docker is required by default for this runnable base architect skill. Only allow `NO_DOCKER=yes` when the user explicitly asks for a local-only exception.
 
 ## Inputs
 

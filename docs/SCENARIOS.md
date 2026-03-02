@@ -3,21 +3,29 @@
 ## Quick Compositions
 
 Production note:
+- Docker is required by default across all runnable base architect skills. Only allow `NO_DOCKER=yes` when the user explicitly opts out.
 - For production-default flows, append `addon-human-pr-review-gate` unless explicitly opting out.
 - For production-default flows, append `addon-decision-justification-ledger` (required).
 - For production-default flows, append `addon-domain-semantic-adaptation` unless explicitly opting out.
+- For public `api` and `web` flows in production-default mode, append `addon-observability-telemetry` unless explicitly opting out.
 - For production-default flows, append `addon-deterministic-eval-suite` unless explicitly opting out.
 
 - Python data/PDF/Markdown RAG worker:
 `architect-python-uv-batch` + `addon-rag-ingestion-pipeline`
 - Python legal PDF clause RAG worker:
 `architect-python-uv-batch` + `addon-rag-ingestion-pipeline` + `addon-docling-legal-chunk-embed`
+- Python API with auth and access control:
+`architect-python-uv-fastapi-sqlalchemy` + `addon-auth-access-control`
 - Python API + LangChain LLM routes:
 `architect-python-uv-fastapi-sqlalchemy` + `addon-langchain-llm`
 - Python API + LangGraph agent workflow:
 `architect-python-uv-fastapi-sqlalchemy` + `addon-langgraph-agent`
+- Cross-architecture observability-first flow:
+`architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-observability-telemetry`
 - Cross-architecture LLM translation:
 `architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-llm-translation`
+- Cross-architecture direct LLM SDK flow:
+`architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-direct-llm-sdk`
 - Cross-architecture LangChain LLM routes:
 `architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-langchain-llm`
 - Cross-architecture LangGraph agent workflow:
@@ -77,6 +85,18 @@ Add `/v1/llm/chat` with typed request/response, provider/model configuration, an
 Mode: production-default with containerized validation.
 ```
 
+### FastAPI + Auth Access Control
+
+```bash
+npx skills add ajrlewis/ai-skills --skill architect-python-uv-fastapi-sqlalchemy --skill addon-auth-access-control
+```
+
+```text
+Use architect-python-uv-fastapi-sqlalchemy and addon-auth-access-control.
+Add auth endpoints, protected route guards, session or token policy, and explicit RBAC or scope enforcement for privileged surfaces.
+Mode: production-default with containerized validation.
+```
+
 ### FastAPI + LangGraph agent
 
 ```bash
@@ -89,6 +109,18 @@ Add stateful agent run endpoints with checkpointing, step limits, and run teleme
 Mode: production-default with containerized validation.
 ```
 
+### Cross-architecture Observability Telemetry
+
+```bash
+npx skills add ajrlewis/ai-skills --skill architect-python-uv-fastapi-sqlalchemy --skill addon-observability-telemetry
+```
+
+```text
+Use architect-python-uv-fastapi-sqlalchemy and addon-observability-telemetry.
+Add structured logs, health and readiness endpoints, correlation IDs, and bounded metrics or tracing hooks with redaction rules.
+Mode: production-default with containerized validation.
+```
+
 ### Cross-architecture LLM translation
 
 ```bash
@@ -98,6 +130,18 @@ npx skills add ajrlewis/ai-skills --skill architect-nextjs-bun-app --skill addon
 ```text
 Use architect-nextjs-bun-app and addon-llm-translation.
 Add a server-side translation route with typed source/target language contract, provider fallback behavior, and explicit review state before publish.
+Mode: production-default with containerized validation.
+```
+
+### Cross-architecture Direct LLM SDK
+
+```bash
+npx skills add ajrlewis/ai-skills --skill architect-python-uv-fastapi-sqlalchemy --skill addon-direct-llm-sdk
+```
+
+```text
+Use architect-python-uv-fastapi-sqlalchemy and addon-direct-llm-sdk.
+Add direct provider SDK backed LLM routes with allow-listed provider and model settings, timeout and retry controls, and normalized typed responses.
 Mode: production-default with containerized validation.
 ```
 

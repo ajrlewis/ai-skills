@@ -6,6 +6,7 @@ description: Use when scaffolding production-ready FastAPI services with uv, SQL
 # Architect: Python + uv + FastAPI + SQLAlchemy
 
 Use this skill when the user wants a production API scaffold in Python with modern packaging (`uv`), database migrations, containerization, and CI.
+Docker is required by default for this runnable base architect skill. Only allow `NO_DOCKER=yes` when the user explicitly asks for a local-only exception.
 
 ## Inputs
 

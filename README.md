@@ -9,6 +9,7 @@ This repo uses a layered model:
 - `architect-stack-selector`: router that chooses the minimal valid combination
 
 Production default:
+- require Docker for runnable base architect skills by default; only allow `NO_DOCKER=yes` when the user explicitly opts out.
 - include `addon-human-pr-review-gate` for human-in-the-loop merge safety.
 - include `addon-decision-justification-ledger` so each non-trivial decision is traceable.
 - include `addon-domain-semantic-adaptation` so output language matches user intent.
@@ -28,6 +29,8 @@ Base architect skills:
 Add-on skills:
 - `addon-decision-justification-ledger`
 - `addon-human-pr-review-gate`
+- `addon-auth-access-control`
+- `addon-observability-telemetry`
 - `addon-domain-semantic-adaptation`
 - `addon-deterministic-eval-suite`
 - `addon-llm-judge-evals`
@@ -40,6 +43,7 @@ Add-on skills:
 - `addon-nostr-nip23-longform`
 - `addon-llm-ancient-greek-translation`
 - `addon-llm-translation`
+- `addon-direct-llm-sdk`
 - `addon-langchain-llm`
 - `addon-langgraph-agent`
 - `addon-google-agent-dev-kit`
@@ -77,7 +81,10 @@ npx skills add ajrlewis/ai-skills --skill addon-decision-justification-ledger
 npx skills add ajrlewis/ai-skills --skill addon-domain-semantic-adaptation
 npx skills add ajrlewis/ai-skills --skill addon-deterministic-eval-suite
 npx skills add ajrlewis/ai-skills --skill addon-human-pr-review-gate
+npx skills add ajrlewis/ai-skills --skill addon-auth-access-control
+npx skills add ajrlewis/ai-skills --skill addon-observability-telemetry
 npx skills add ajrlewis/ai-skills --skill addon-llm-translation
+npx skills add ajrlewis/ai-skills --skill addon-direct-llm-sdk
 npx skills add ajrlewis/ai-skills --skill addon-langchain-llm
 npx skills add ajrlewis/ai-skills --skill addon-langgraph-agent
 npx skills add ajrlewis/ai-skills --skill addon-google-agent-dev-kit

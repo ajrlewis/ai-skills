@@ -26,8 +26,9 @@ Collect:
 scripts/nostr/sync_nips_lock.py
 docs/nostr/nips.lock.json
 ```
-- Copy and adapt script from this skill's bundled script:
+- Copy and adapt this skill's bundled script:
 - `scripts/sync_nips_lock.py`
+- Place the adapted result in the target project at `scripts/nostr/sync_nips_lock.py`.
 
 2. Generate lock:
 ```bash

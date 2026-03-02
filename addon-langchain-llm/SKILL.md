@@ -12,6 +12,7 @@ Use this skill when an existing project needs LangChain primitives for chat, ret
 - Works with `architect-python-uv-fastapi-sqlalchemy`, `architect-python-uv-batch`, and `architect-nextjs-bun-app`.
 - Can be combined with `addon-rag-ingestion-pipeline`.
 - Can be combined with `addon-langgraph-agent` when graph orchestration is required.
+- Can be combined with `addon-llm-judge-evals`; when used together, declare `langchain` in `config/skill_manifest.json` so the judge runner can resolve the backend without guessing.
 
 ## Inputs
 
@@ -61,6 +62,11 @@ src/app/api/llm/chat/route.ts
 - Keep retrieval source metadata in outputs.
 - Bound document count and token budget.
 
+5. If `addon-llm-judge-evals` is also selected:
+- emit `config/skill_manifest.json` with `addon-langchain-llm` in `addons`
+- declare `"judge_backends": ["langchain"]` in `capabilities`
+- allow the judge runner to reuse `DEFAULT_MODEL` when `JUDGE_MODEL` is unset
+
 ## Required Template
 
 ### Chat response shape
@@ -85,6 +91,7 @@ src/app/api/llm/chat/route.ts
 - Add timeout and retry limits around provider calls.
 - Never log secrets or raw auth headers.
 - On streaming disconnect, stop upstream generation promptly.
+- If judge evals are enabled, keep the judge path on the same provider abstraction instead of bypassing it with ad hoc SDK calls.
 
 ## Validation Checklist
 

@@ -35,8 +35,8 @@ evals/deterministic/checks/
 - docker artifact checks (`Dockerfile`, `docker-compose.yml`, image build)
 - decision trace checks (`docs/DECISION_LOG.md`, `REVIEW_BUNDLE/DECISION_TRACE.md`)
 - non-zero exit on failure
-- for skills repositories: frontmatter naming check (`scripts/validation/check_skill_frontmatter.sh`)
-- for skills repositories: decision-policy check (`scripts/validation/check_skill_decision_policy.sh`)
+- for skills repositories: add repository-local checks that validate skill folder/frontmatter naming
+- for skills repositories: add repository-local checks that validate required decision-policy language
 
 3. Skill-specific checks:
 - one check file per selected skill
@@ -45,6 +45,7 @@ evals/deterministic/checks/
 - `check_rag_ingest_query.sh`
 - `check_review_bundle.sh`
 - `check_decision_trace.sh`
+- `check_skill_repo_policy.sh`
 
 4. Output summary:
 - write deterministic run summary to `REVIEW_BUNDLE/TEST_EVIDENCE.md`.

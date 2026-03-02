@@ -6,6 +6,7 @@ description: Use when scaffolding a production-ready Next.js Bun Docker base for
 # Architect: Next.js + Bun App
 
 Use this skill to scaffold a production-minded Next.js app baseline before layering domain-specific add-ons.
+Docker is required by default for this runnable base architect skill. Only allow `NO_DOCKER=yes` when the user explicitly asks for a local-only exception.
 
 ## Inputs
 

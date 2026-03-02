@@ -22,6 +22,8 @@ Protocol architect skills:
 Add-on skills:
 - `addon-decision-justification-ledger`
 - `addon-human-pr-review-gate`
+- `addon-auth-access-control`
+- `addon-observability-telemetry`
 - `addon-domain-semantic-adaptation`
 - `addon-deterministic-eval-suite`
 - `addon-llm-judge-evals`
@@ -34,6 +36,7 @@ Add-on skills:
 - `addon-nostr-nip23-longform`
 - `addon-llm-ancient-greek-translation`
 - `addon-llm-translation`
+- `addon-direct-llm-sdk`
 - `addon-langchain-llm`
 - `addon-langgraph-agent`
 - `addon-google-agent-dev-kit`
@@ -48,6 +51,7 @@ UI skills:
 
 1. Parse user intent into:
 - app surface: `batch` | `api` | `web`
+- exposure model: `public` | `internal` (infer `public` by default for `api` and `web` unless the user clearly says internal-only)
 - language/runtime preference: `python` | `nextjs` | unspecified
 - data/retrieval needs: RAG yes/no, source formats (pdf/markdown/html/csv/text)
 - protocol needs: Nostr yes/no
@@ -59,6 +63,7 @@ UI skills:
 - review gate preference: `required` (default) or explicit opt-out
 - decision justification preference: `required` (default, non-optional)
 - semantic adaptation preference: `required` (default) or explicit opt-out
+- observability preference: `required-for-public-api-web` (default) or explicit opt-out
 - eval preference: deterministic `required` (default), llm-judge `optional` (default)
 
 2. Pick exactly one base architect skill.
@@ -80,6 +85,7 @@ UI skills:
 - whether human PR review gate is in-scope (`required` by default unless explicitly opted out)
 - whether decision justification ledger is in-scope (`required` by default, no opt-out)
 - whether semantic adaptation is in-scope (`required` by default unless explicitly opted out)
+- whether observability telemetry is in-scope (`required` for public `api`/`web` by default unless explicitly opted out)
 - whether deterministic eval suite is in-scope (`required` by default unless explicitly opted out)
 - whether llm-judge evals are in-scope (`optional` by default unless explicitly requested)
 - Nostr protocol routing status and selected NIP profile (when applicable)
@@ -91,15 +97,17 @@ UI skills:
   choose `architect-python-uv-batch`.
 - If environment is constrained (missing package managers and/or no network):
   keep selected architecture, but explicitly return a degraded fallback mode and what cannot be verified yet.
-- Default to `production-default` and require Docker artifacts for base skills.
+- Default to `production-default`. Docker is required by default across all runnable base architect skills.
 - Default to `addon-human-pr-review-gate`.
 - Default to `addon-decision-justification-ledger`.
 - Default to `addon-domain-semantic-adaptation`.
+- Default to `addon-observability-telemetry` for public `api` and `web` surfaces.
 - Default to `addon-deterministic-eval-suite`.
 - Only allow `local-no-docker` when user explicitly sets `NO_DOCKER=yes`.
 - Only allow skipping `addon-human-pr-review-gate` when user explicitly requests opt-out.
 - Do not allow skipping `addon-decision-justification-ledger` in production-default mode.
 - Only allow skipping `addon-domain-semantic-adaptation` when user explicitly requests opt-out.
+- Only allow skipping `addon-observability-telemetry` for public `api` and `web` surfaces when user explicitly requests opt-out.
 - Only allow skipping `addon-deterministic-eval-suite` when user explicitly requests opt-out.
 - If user asks for qualitative scoring, rubric grading, or "LLM as judge":
   add `addon-llm-judge-evals`.
@@ -129,6 +137,12 @@ UI skills:
   add `addon-llm-ancient-greek-translation`.
 - If user asks for general LLM translation/localization flows:
   add `addon-llm-translation`.
+- If user asks for login, sessions, JWTs, API keys, RBAC, scopes, protected routes, or access control:
+  add `addon-auth-access-control`.
+- If user asks for logging, metrics, tracing, health checks, production diagnostics, or telemetry:
+  add `addon-observability-telemetry`.
+- If user asks for direct provider SDK usage, explicit provider control, or to avoid LangChain/ADK/Vercel AI abstractions:
+  add `addon-direct-llm-sdk`.
 - If user asks for LangChain abstractions or LLM provider interactions (chat/completions/RAG chain execution):
   add `addon-langchain-llm`.
 - If user asks for LangGraph orchestration or multi-step agent behavior (state machine, tool loops, checkpoints):
@@ -148,12 +162,18 @@ UI skills:
 
 ## Default Compositions
 
+For public `api` and `web` flows in `production-default` mode, append `addon-observability-telemetry` unless the user explicitly opts out.
+
 - Python PDF/Markdown RAG worker:
   `architect-python-uv-batch` + `addon-rag-ingestion-pipeline` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Python legal PDF clause RAG worker:
   `architect-python-uv-batch` + `addon-rag-ingestion-pipeline` + `addon-docling-legal-chunk-embed` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Python API with RAG endpoints:
   `architect-python-uv-fastapi-sqlalchemy` + `addon-rag-ingestion-pipeline` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+- FastAPI with auth and access control:
+  `architect-python-uv-fastapi-sqlalchemy` + `addon-auth-access-control` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+- Cross-architecture observability-first flow:
+  `architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-observability-telemetry` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Next.js Nostr client:
   `architect-nextjs-bun-app` + `architect-nostr-intent-router` + `addon-nostr-client-nextjs` + `addon-nostr-nip-profile-selector` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Next.js Nostr client with social feed UI:
@@ -170,6 +190,8 @@ UI skills:
   `architect-python-uv-fastapi-sqlalchemy` + `addon-langgraph-agent` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Cross-architecture translation flow:
   `architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-llm-translation` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+- Cross-architecture direct LLM SDK flow:
+  `architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-direct-llm-sdk` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Cross-architecture LangChain LLM flow:
   `architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-langchain-llm` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Cross-architecture LangGraph agent flow:
@@ -202,7 +224,7 @@ Execution mode:
 - full | offline-smoke | limited-by-sandbox
 
 Containerization:
-- required (default) | explicit-no-docker (user requested)
+- required across runnable base architect skills (default) | explicit-no-docker (user requested)
 
 Human review gate:
 - required (default) | explicit-opt-out (user requested)
@@ -212,6 +234,9 @@ Decision justification ledger:
 
 Semantic adaptation:
 - required (default) | explicit-opt-out (user requested)
+
+Observability telemetry:
+- required-for-public-api-web (default) | explicit-opt-out (user requested)
 
 Deterministic eval suite:
 - required (default) | explicit-opt-out (user requested)
