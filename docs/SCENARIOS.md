@@ -7,8 +7,16 @@ Production note:
 - For production-default flows, append `addon-human-pr-review-gate` unless explicitly opting out.
 - For production-default flows, append `addon-decision-justification-ledger` (required).
 - For production-default flows, append `addon-domain-semantic-adaptation` unless explicitly opting out.
-- For public `api` and `web` flows in production-default mode, append `addon-observability-telemetry` unless explicitly opting out.
+- For public `api` and `web` flows in production-default mode, append the runtime-specific observability add-on as baseline observability unless explicitly opting out.
 - For production-default flows, append `addon-deterministic-eval-suite` unless explicitly opting out.
+
+Observability boundary examples:
+- Baseline runtime default:
+`Build a public FastAPI service for customer accounts with auth and Postgres.`
+- Explicit full telemetry push:
+`Build a public FastAPI service and add structured logs, metrics, tracing, health checks, and redaction rules.`
+- Cross-runtime observability policy:
+`Define a shared observability policy we can apply across our Python API and Next.js app before we choose implementation details.`
 
 - Python data/PDF/Markdown RAG worker:
 `architect-python-uv-batch` + `addon-rag-ingestion-pipeline`
@@ -20,8 +28,10 @@ Production note:
 `architect-python-uv-fastapi-sqlalchemy` + `addon-langchain-llm`
 - Python API + LangGraph agent workflow:
 `architect-python-uv-fastapi-sqlalchemy` + `addon-langgraph-agent`
-- Cross-architecture observability-first flow:
-`architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-observability-telemetry`
+- Python observability-first flow:
+`architect-python-uv-fastapi-sqlalchemy` + `addon-observability-telemetry` + `addon-observability-python-structlog`
+- Next.js observability-first flow:
+`architect-nextjs-bun-app` + `addon-observability-telemetry` + `addon-observability-nextjs-pino`
 - Cross-architecture LLM translation:
 `architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-llm-translation`
 - Cross-architecture direct LLM SDK flow:
@@ -109,16 +119,36 @@ Add stateful agent run endpoints with checkpointing, step limits, and run teleme
 Mode: production-default with containerized validation.
 ```
 
-### Cross-architecture Observability Telemetry
+### FastAPI + structlog Observability
 
 ```bash
-npx skills add ajrlewis/ai-skills --skill architect-python-uv-fastapi-sqlalchemy --skill addon-observability-telemetry
+npx skills add ajrlewis/ai-skills --skill architect-python-uv-fastapi-sqlalchemy --skill addon-observability-telemetry --skill addon-observability-python-structlog
 ```
 
 ```text
-Use architect-python-uv-fastapi-sqlalchemy and addon-observability-telemetry.
+Use architect-python-uv-fastapi-sqlalchemy, addon-observability-telemetry, and addon-observability-python-structlog.
 Add structured logs, health and readiness endpoints, correlation IDs, and bounded metrics or tracing hooks with redaction rules.
 Mode: production-default with containerized validation.
+```
+
+### Next.js + pino Observability
+
+```bash
+npx skills add ajrlewis/ai-skills --skill architect-nextjs-bun-app --skill addon-observability-telemetry --skill addon-observability-nextjs-pino
+```
+
+```text
+Use architect-nextjs-bun-app, addon-observability-telemetry, and addon-observability-nextjs-pino.
+Add structured server logs, correlation IDs, and bounded metrics or tracing hooks with redaction rules.
+Mode: production-default with containerized validation.
+```
+
+### Cross-runtime Observability Policy First
+
+```text
+Use architect-stack-selector and addon-observability-telemetry.
+Define a shared observability policy for a Python API and a Next.js app before choosing runtime-specific implementations.
+Then, once each runtime is selected, add addon-observability-python-structlog or addon-observability-nextjs-pino as appropriate.
 ```
 
 ### Cross-architecture LLM translation

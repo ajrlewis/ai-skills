@@ -14,6 +14,8 @@ Production default:
 - include `addon-decision-justification-ledger` so each non-trivial decision is traceable.
 - include `addon-domain-semantic-adaptation` so output language matches user intent.
 - include `addon-deterministic-eval-suite` for hard pass/fail validation.
+- use runtime-specific observability add-ons (`addon-observability-python-structlog` or `addon-observability-nextjs-pino`) as the baseline default for public Python API and Next.js web flows.
+- for explicit observability-heavy requests, switch to the full telemetry push: `addon-observability-telemetry` plus the runtime-specific observability add-on.
 - use `architect-stack-selector` as control plane (select + scaffold + validate).
 
 ## Skill Catalog
@@ -31,6 +33,8 @@ Add-on skills:
 - `addon-human-pr-review-gate`
 - `addon-auth-access-control`
 - `addon-observability-telemetry`
+- `addon-observability-python-structlog`
+- `addon-observability-nextjs-pino`
 - `addon-domain-semantic-adaptation`
 - `addon-deterministic-eval-suite`
 - `addon-llm-judge-evals`
@@ -83,6 +87,8 @@ npx skills add ajrlewis/ai-skills --skill addon-deterministic-eval-suite
 npx skills add ajrlewis/ai-skills --skill addon-human-pr-review-gate
 npx skills add ajrlewis/ai-skills --skill addon-auth-access-control
 npx skills add ajrlewis/ai-skills --skill addon-observability-telemetry
+npx skills add ajrlewis/ai-skills --skill addon-observability-python-structlog
+npx skills add ajrlewis/ai-skills --skill addon-observability-nextjs-pino
 npx skills add ajrlewis/ai-skills --skill addon-llm-translation
 npx skills add ajrlewis/ai-skills --skill addon-direct-llm-sdk
 npx skills add ajrlewis/ai-skills --skill addon-langchain-llm

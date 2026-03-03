@@ -24,6 +24,8 @@ Add-on skills:
 - `addon-human-pr-review-gate`
 - `addon-auth-access-control`
 - `addon-observability-telemetry`
+- `addon-observability-python-structlog`
+- `addon-observability-nextjs-pino`
 - `addon-domain-semantic-adaptation`
 - `addon-deterministic-eval-suite`
 - `addon-llm-judge-evals`
@@ -64,6 +66,7 @@ UI skills:
 - decision justification preference: `required` (default, non-optional)
 - semantic adaptation preference: `required` (default) or explicit opt-out
 - observability preference: `required-for-public-api-web` (default) or explicit opt-out
+- observability intensity: `baseline-runtime-default` | `explicit-full-telemetry-push` (infer `explicit-full-telemetry-push` only when observability is a primary user requirement; otherwise keep the baseline default)
 - eval preference: deterministic `required` (default), llm-judge `optional` (default)
 
 2. Pick exactly one base architect skill.
@@ -86,6 +89,7 @@ UI skills:
 - whether decision justification ledger is in-scope (`required` by default, no opt-out)
 - whether semantic adaptation is in-scope (`required` by default unless explicitly opted out)
 - whether observability telemetry is in-scope (`required` for public `api`/`web` by default unless explicitly opted out)
+- whether observability intensity is baseline runtime-default or explicit full telemetry push
 - whether deterministic eval suite is in-scope (`required` by default unless explicitly opted out)
 - whether llm-judge evals are in-scope (`optional` by default unless explicitly requested)
 - Nostr protocol routing status and selected NIP profile (when applicable)
@@ -101,13 +105,16 @@ UI skills:
 - Default to `addon-human-pr-review-gate`.
 - Default to `addon-decision-justification-ledger`.
 - Default to `addon-domain-semantic-adaptation`.
-- Default to `addon-observability-telemetry` for public `api` and `web` surfaces.
+- Default `observability intensity` to `baseline-runtime-default`.
+- For `baseline-runtime-default`, add only the runtime-specific observability implementation add-on for public `api` and `web` surfaces:
+  - Python `api` or worker runtime: `addon-observability-python-structlog`
+  - Next.js or TypeScript server runtime: `addon-observability-nextjs-pino`
 - Default to `addon-deterministic-eval-suite`.
 - Only allow `local-no-docker` when user explicitly sets `NO_DOCKER=yes`.
 - Only allow skipping `addon-human-pr-review-gate` when user explicitly requests opt-out.
 - Do not allow skipping `addon-decision-justification-ledger` in production-default mode.
 - Only allow skipping `addon-domain-semantic-adaptation` when user explicitly requests opt-out.
-- Only allow skipping `addon-observability-telemetry` for public `api` and `web` surfaces when user explicitly requests opt-out.
+- Only allow skipping observability add-ons for public `api` and `web` surfaces when user explicitly requests opt-out.
 - Only allow skipping `addon-deterministic-eval-suite` when user explicitly requests opt-out.
 - If user asks for qualitative scoring, rubric grading, or "LLM as judge":
   add `addon-llm-judge-evals`.
@@ -139,7 +146,12 @@ UI skills:
   add `addon-llm-translation`.
 - If user asks for login, sessions, JWTs, API keys, RBAC, scopes, protected routes, or access control:
   add `addon-auth-access-control`.
-- If user asks for logging, metrics, tracing, health checks, production diagnostics, or telemetry:
+- If user makes observability a primary requirement (for example asks for logging, metrics, tracing, health checks, production diagnostics, or telemetry as a named deliverable):
+  set `observability intensity` to `explicit-full-telemetry-push`.
+- If `observability intensity` is `explicit-full-telemetry-push`:
+  add `addon-observability-telemetry` plus the runtime-specific observability implementation add-on when the runtime is known.
+- If user asks for cross-runtime observability policy, asks for generic observability guidance before choosing a runtime, or the runtime does not have a dedicated implementation add-on:
+  set `observability intensity` to `explicit-full-telemetry-push`;
   add `addon-observability-telemetry`.
 - If user asks for direct provider SDK usage, explicit provider control, or to avoid LangChain/ADK/Vercel AI abstractions:
   add `addon-direct-llm-sdk`.
@@ -160,20 +172,34 @@ UI skills:
 - If user gives domain-specific terminology or language preferences:
   add `addon-domain-semantic-adaptation`.
 
+## Observability Intensity Examples
+
+- Baseline runtime default:
+  `Build a public FastAPI service for customer accounts with auth and Postgres.`
+  Route to the Python base stack and include the runtime-specific observability add-on only.
+- Explicit full telemetry push:
+  `Build a public FastAPI service and add structured logs, metrics, tracing, health checks, and redaction rules.`
+  Route to the Python base stack and include `addon-observability-telemetry` plus the runtime-specific observability add-on.
+- Cross-runtime observability policy:
+  `Define a shared observability policy we can apply across our Python API and Next.js app before we choose implementation details.`
+  Add `addon-observability-telemetry` first, then add runtime-specific observability add-ons only after a concrete runtime is selected.
+
 ## Default Compositions
 
-For public `api` and `web` flows in `production-default` mode, append `addon-observability-telemetry` unless the user explicitly opts out.
+For public `api` and `web` flows in `production-default` mode, append the runtime-specific observability add-on as baseline observability unless the user explicitly opts out.
 
 - Python PDF/Markdown RAG worker:
   `architect-python-uv-batch` + `addon-rag-ingestion-pipeline` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Python legal PDF clause RAG worker:
   `architect-python-uv-batch` + `addon-rag-ingestion-pipeline` + `addon-docling-legal-chunk-embed` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Python API with RAG endpoints:
-  `architect-python-uv-fastapi-sqlalchemy` + `addon-rag-ingestion-pipeline` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+  `architect-python-uv-fastapi-sqlalchemy` + `addon-rag-ingestion-pipeline` + `addon-observability-python-structlog` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - FastAPI with auth and access control:
-  `architect-python-uv-fastapi-sqlalchemy` + `addon-auth-access-control` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
-- Cross-architecture observability-first flow:
-  `architect-nextjs-bun-app` or `architect-python-uv-fastapi-sqlalchemy` + `addon-observability-telemetry` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+  `architect-python-uv-fastapi-sqlalchemy` + `addon-auth-access-control` + `addon-observability-python-structlog` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+- Python observability-first flow:
+  `architect-python-uv-fastapi-sqlalchemy` + `addon-observability-telemetry` + `addon-observability-python-structlog` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+- Next.js observability-first flow:
+  `architect-nextjs-bun-app` + `addon-observability-telemetry` + `addon-observability-nextjs-pino` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Next.js Nostr client:
   `architect-nextjs-bun-app` + `architect-nostr-intent-router` + `addon-nostr-client-nextjs` + `addon-nostr-nip-profile-selector` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Next.js Nostr client with social feed UI:
@@ -181,9 +207,9 @@ For public `api` and `web` flows in `production-default` mode, append `addon-obs
 - Next.js typography-first journal with NIP-23 + Ancient Greek translation:
   `architect-nextjs-bun-app` + `architect-nostr-intent-router` + `addon-nostr-client-nextjs` + `addon-nostr-nip-profile-selector` + `addon-nostr-key-custody` + `addon-nostr-nip23-longform` + `addon-llm-ancient-greek-translation` + `ui-editorial-writing-surface` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Next.js document intake UI for RAG:
-  `architect-nextjs-bun-app` + `addon-rag-ingestion-pipeline` + `ui-document-intake-dropzone` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+  `architect-nextjs-bun-app` + `addon-rag-ingestion-pipeline` + `ui-document-intake-dropzone` + `addon-observability-nextjs-pino` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Full-stack Next + Prisma + vector search:
-  `architect-next-prisma-bun-vector` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate` (+ `addon-rag-ingestion-pipeline` if ingest/retrieval pipeline needed)
+  `architect-next-prisma-bun-vector` + `addon-observability-nextjs-pino` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate` (+ `addon-rag-ingestion-pipeline` if ingest/retrieval pipeline needed)
 - FastAPI with direct LangChain LLM endpoints:
   `architect-python-uv-fastapi-sqlalchemy` + `addon-langchain-llm` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - FastAPI with LangGraph agent orchestration:
@@ -237,6 +263,9 @@ Semantic adaptation:
 
 Observability telemetry:
 - required-for-public-api-web (default) | explicit-opt-out (user requested)
+
+Observability intensity:
+- baseline-runtime-default (default) | explicit-full-telemetry-push (user requested or clearly primary requirement)
 
 Deterministic eval suite:
 - required (default) | explicit-opt-out (user requested)

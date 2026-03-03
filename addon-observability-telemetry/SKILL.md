@@ -6,12 +6,16 @@ description: Use when a project needs production-grade logging, metrics, tracing
 # Add-on: Observability Telemetry
 
 Use this skill when a project needs to be diagnosable in production with structured telemetry instead of ad hoc console logging.
+Prefer trusted, ecosystem-standard observability packages over custom logging utilities.
+Use this as the shared observability policy layer, then pair it with the runtime-specific implementation add-on when available.
 
 ## Compatibility
 
 - Works with all `architect-*` skills.
 - Especially useful for `architect-python-uv-fastapi-sqlalchemy`, `architect-nextjs-bun-app`, and any queue or worker style runtime.
 - Can be combined with `addon-deterministic-eval-suite` to make telemetry contracts testable.
+- Prefer `addon-observability-python-structlog` for Python runtimes.
+- Prefer `addon-observability-nextjs-pino` for Next.js or TypeScript server runtimes.
 
 ## Inputs
 
@@ -21,6 +25,7 @@ Collect:
 - `LOG_FORMAT`: `json` | `logfmt`.
 - `ERROR_TRACKING`: `yes` | `no` (default `yes`).
 - `PII_REDACTION`: `strict` | `standard`.
+- `LOG_BACKEND`: default to the runtime-standard package unless the user explicitly requests another option.
 
 ## Integration Workflow
 
@@ -36,6 +41,7 @@ scripts/ops/check_health.*
 - Copy and adapt this skill's bundled health-check script:
 - `scripts/check_health.sh`
 - Place the adapted result in the target project at `scripts/ops/check_health.sh` (or the runtime-equivalent script path).
+- Treat `observability/logging.*` as package configuration and adapters only; do not implement a custom logger there.
 
 2. Standardize event shape:
 - use structured logs with request or run correlation IDs
@@ -51,6 +57,11 @@ scripts/ops/check_health.*
 - redact auth headers, secrets, and raw personal data
 - document what fields may be logged
 - keep sampling and retention decisions explicit
+
+5. Select runtime-standard dependencies:
+- Next.js or TypeScript server runtimes: prefer `addon-observability-nextjs-pino`. If that add-on is unavailable, still use `pino`; do not rely on ad hoc `console.log` in production request paths. `logging.ts` should configure serializers, redaction, correlation IDs, and child loggers only.
+- Python services and workers: prefer `addon-observability-python-structlog`. If that add-on is unavailable, still use `structlog` for APIs and long-lived services. `loguru` is acceptable for smaller services or CLI-heavy workers when a simpler sink model is sufficient. Do not build a custom wrapper around `print` or bare stdlib logging as the primary production path.
+- If metrics or traces are enabled, prefer official OpenTelemetry SDK or instrumentation packages instead of custom metric counters or tracing helpers.
 
 ## Required Template
 
@@ -86,10 +97,15 @@ scripts/ops/check_health.*
 
 
 - Do not emit telemetry that leaks credentials, tokens, or full request bodies by default.
+- Prefer one well-supported observability dependency over a dependency-free but hand-rolled logger.
+- Keep `observability/logging.*` limited to configuring, adapting, and binding the chosen package; do not create a homemade logger implementation.
+- Do not use raw `console.log` in production TypeScript or Next.js server code except in tests or local-only scripts.
+- Do not use raw `print()` in production Python service code except for explicit CLI UX or local-only scripts.
+- If the runtime already has a clear ecosystem default, use it unless the user explicitly requests an alternative and the tradeoff is documented.
 - Use correlation IDs consistently across logs, metrics labels, and traces where supported.
 - Prefer stable event names over free-form log spam.
 - Missing health diagnostics for critical dependencies should be treated as incomplete.
-- Keep observability dependencies optional and bounded; avoid adding heavyweight infra by default.
+- Keep observability dependencies bounded; avoid heavyweight infra by default, but do not treat "bounded" as "dependency-free."
 
 ## Validation Checklist
 
@@ -99,12 +115,14 @@ scripts/ops/check_health.*
 ```bash
 test -f docs/OBSERVABILITY.md
 rg -n "health|ready|trace|metric|correlation" src || true
+rg -n "console\\.log" src || true
 test -e scripts/ops/check_health.sh || test -e scripts/ops/check_health.ts || test -e scripts/ops/check_health.py || true
 ```
 
 Manual checks:
 - Health endpoint reports degraded status for dependency failures.
 - Logs and traces include correlation identifiers without leaking secrets.
+- `observability/logging.*` configures a real package (`pino`, `structlog`, `loguru`, or explicit user-approved equivalent) instead of implementing logging from scratch.
 
 ## Decision Justification Rule
 
