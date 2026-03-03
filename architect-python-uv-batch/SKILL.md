@@ -176,7 +176,7 @@ from {{MODULE_NAME}}.pipelines.pdf_ingest import run_pdf_ingest
 ```dockerfile
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS build
 WORKDIR /app
-COPY pyproject.toml uv.lock* ./
+COPY pyproject.toml uv.lock ./
 COPY src ./src
 RUN uv sync --frozen --no-dev
 COPY data ./data
@@ -190,6 +190,7 @@ COPY --from=build /app/.venv /app/.venv
 COPY --from=build /app /workspace
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONPATH="/workspace/src"
+RUN chown -R app:app /workspace
 USER app
 CMD ["python", "-m", "{{MODULE_NAME}}.cli", "ingest-pdf"]
 ```
@@ -217,6 +218,7 @@ services:
       - ./data:/workspace/data
     command: ["python", "-m", "{{MODULE_NAME}}.cli", "ingest-pdf"]
 ```
+Do not add a `ports:` block by default for batch workers. They are one-shot or background jobs, not HTTP services; use volumes and explicit commands instead.
 
 ## CI + Quality
 
@@ -267,6 +269,8 @@ jobs:
 - If RAG is optional, keep `rag/*` modules decoupled from non-RAG pipelines.
 - Treat `NO_DOCKER=yes` as an explicit exception, not a default path.
 - Ensure tests can run via plain `python3 -m unittest discover -s tests -v` without requiring `PYTHONPATH` for imports.
+- Ensure `uv.lock` is committed before Docker build; the Dockerfile copies it explicitly for deterministic `uv sync --frozen` installs.
+- Ensure any runtime output directories under `/workspace` are writable by the non-root app user.
 
 ## Validation Checklist
 
@@ -279,6 +283,7 @@ uv run ruff check . --select D
 uv run mypy src
 uv run pytest -q
 uv run {{PROJECT_NAME}} ingest-pdf
+test -f uv.lock
 docker build -t {{PROJECT_NAME}}:local .
 docker compose run --rm app
 ```

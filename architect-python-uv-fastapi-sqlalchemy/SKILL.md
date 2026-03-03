@@ -142,7 +142,7 @@ app.include_router(health_router)
 ```dockerfile
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS build
 WORKDIR /app
-COPY pyproject.toml uv.lock* ./
+COPY pyproject.toml uv.lock ./
 COPY src ./src
 RUN uv sync --frozen --no-dev
 
@@ -206,6 +206,7 @@ services:
 volumes:
   pg_data:
 ```
+Keep `ports: - "8000:8000"` on the `api` service so the host can reach the app. If documenting direct `docker run` usage for the API image, include `-p 8000:8000` and the required `DATABASE_URL`; `docker compose` remains the default local path because it provides the database too.
 
 ### `.github/workflows/ci.yml`
 ```yaml
@@ -258,6 +259,7 @@ jobs:
 - Ensure container runs as non-root user.
 - Prefer `docker compose` in docs and scripts.
 - Treat `NO_DOCKER=yes` as an explicit exception, not default behavior.
+- Ensure `uv.lock` is committed before Docker build; the Dockerfile copies it explicitly for deterministic `uv sync --frozen` installs.
 
 ## Validation Checklist
 
@@ -271,9 +273,11 @@ uv run ruff check . --select D
 uv run mypy src
 uv run pytest -q
 uv run alembic upgrade head
+test -f uv.lock
 docker build -t {{PROJECT_NAME}}:local .
 docker compose up -d --build
 docker compose ps
+curl http://localhost:8000/healthz
 ```
 `local-no-docker` (`NO_DOCKER=yes`):
 ```bash

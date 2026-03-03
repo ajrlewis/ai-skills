@@ -95,18 +95,26 @@ RUN apk add --no-cache --virtual .build-deps git build-base postgresql-dev \
 ```dockerfile
 FROM oven/bun:1.1.38-alpine AS deps
 WORKDIR /app
-COPY package.json bun.lockb* ./
+COPY package.json bun.lockb ./
 RUN bun install --frozen-lockfile
 
-FROM deps AS build
+FROM oven/bun:1.1.38-alpine AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN bunx prisma generate && bun run build
+
+FROM oven/bun:1.1.38-alpine AS prod-deps
+WORKDIR /app
+COPY package.json bun.lockb ./
+RUN bun install --frozen-lockfile --production
 
 FROM oven/bun:1.1.38-alpine AS run
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=build /app/package.json /app/bun.lockb* ./
-COPY --from=build /app/node_modules ./node_modules
+ENV PORT=3000
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/.next ./.next
 COPY --from=build /app/public ./public
 COPY --from=build /app/prisma ./prisma
@@ -152,6 +160,7 @@ services:
     environment:
       DATABASE_URL: postgresql://app:app@db:5432/app?schema=public
       DIRECT_URL: postgresql://app:app@db:5432/app?schema=public
+      PORT: "3000"
     depends_on:
       db:
         condition: service_healthy
@@ -161,6 +170,7 @@ services:
 volumes:
   pg_data:
 ```
+Keep `ports: - "3000:3000"` on the `web` service. If documenting direct `docker run` usage for the app image, include `-p 3000:3000` and the required database env wiring; `docker compose` remains the default local path because it provides both.
 
 ### `vitest.config.ts`
 ```typescript
@@ -309,6 +319,7 @@ export async function searchEmbeddings(queryEmbedding: number[], limit = 10) {
 - Ensure app container runs as non-root (`USER bun`).
 - Use `docker compose` commands in docs and scripts.
 - Treat `NO_DOCKER=yes` as explicit exception behavior.
+- Ensure `bun.lockb` is committed before Docker build; the Dockerfile copies it explicitly for deterministic `--frozen-lockfile` installs.
 
 ## Validation Checklist
 
@@ -322,6 +333,7 @@ bunx eslint "src/**/*.{ts,tsx}" --max-warnings=0
 bunx vitest run --coverage
 bunx prisma validate
 bun run build
+test -f bun.lockb
 docker build -t {{PROJECT_NAME}}:local .
 docker compose up -d --build
 docker compose ps

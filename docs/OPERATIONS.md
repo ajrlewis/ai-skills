@@ -53,6 +53,7 @@ docker compose down
 ```
 
 Use this when the scaffold exposes a one-shot worker command such as `ingest-pdf`.
+Batch workers should not publish host ports by default. If a scaffold later adds an HTTP control plane, add ports only for that service.
 
 ### FastAPI Service
 
@@ -68,12 +69,16 @@ docker compose down
 ```
 
 Use this to confirm the API container starts cleanly, the health route responds, and the app shell is reachable for local inspection.
+The generated `api` service should keep `ports: - "8000:8000"`. If you run the API image directly, include `-p 8000:8000` and a valid `DATABASE_URL`.
 
 ### Next.js Web App
 
 ```bash
 cd <nextjs-project>
 docker build -t <project-name>:local .
+docker run --rm -d -p 3000:3000 --name <project-name>-smoke <project-name>:local
+curl http://localhost:3000/
+docker stop <project-name>-smoke
 docker compose up -d --build
 docker compose ps
 curl http://localhost:3000/
@@ -83,6 +88,7 @@ docker compose down
 ```
 
 Use this to validate the web container locally before opening the app in a browser.
+If you skip Compose and run the image directly, keep `-p 3000:3000` so the host can reach the app.
 
 ### Next.js + Prisma + pgvector
 
@@ -100,6 +106,7 @@ docker compose down
 ```
 
 Use this to verify both the app and database containers come up locally, the web surface responds, and the Postgres/pgvector service is reachable for schema or migration inspection.
+The generated `web` service should keep `ports: - "3000:3000"`. If you run the web image directly, include `-p 3000:3000` and the required database envs.
 
 ## Agent Usage
 
@@ -124,11 +131,13 @@ Run:
 
 ```bash
 cd test-output/simple-python-batch
-docker run --rm -v "$PWD":/app -w /app ghcr.io/astral-sh/uv:python3.12-bookworm-slim uv lock
-docker compose build
-docker compose run --rm app
-ls -1 data/processed
+UV_CACHE_DIR=/tmp/uv-cache uv lock
+PYTHONPATH=src python3 -m simple_python_batch.cli ingest-pdf
+docker compose config
+docker build -t simple-python-batch:local .
+docker run --rm simple-python-batch:local
 ```
+The fixture should build and run without bind mounts. Sample inbox data is packaged into the image, and local host runs can still write `data/processed` for inspection.
 
 ### 2) Next.js Nostr Client (base + protocol)
 
@@ -200,11 +209,14 @@ PYTHONPATH=src python3 -m simple_rag_worker.cli rag-ingest --source data/inbox -
 PYTHONPATH=src python3 -m simple_rag_worker.cli rag-query --q "discipline reason justice" --top-k 3
 python3 -m unittest discover -s tests -v
 docker compose config
+docker build -t simple-python-rag-worker:local .
+docker run --rm simple-python-rag-worker:local
 ```
 
 Expected checks:
 - Ingest writes processed text files to `data/processed`.
 - Query returns ranked results from `data/index/index.json`.
+- The Docker image runs the packaged ingest smoke path without a host volume.
 - Unit tests pass without additional runtime setup.
 
 ## Human Review Gate

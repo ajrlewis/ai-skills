@@ -154,20 +154,26 @@ export default eslintConfig;
 ```dockerfile
 FROM oven/bun:1.1.38-alpine AS deps
 WORKDIR /app
-COPY package.json bun.lockb* ./
+COPY package.json bun.lockb ./
 RUN bun install --frozen-lockfile
 
-FROM deps AS build
+FROM oven/bun:1.1.38-alpine AS build
 WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN bun run build
+
+FROM oven/bun:1.1.38-alpine AS prod-deps
+WORKDIR /app
+COPY package.json bun.lockb ./
+RUN bun install --frozen-lockfile --production
 
 FROM oven/bun:1.1.38-alpine AS run
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT={{APP_PORT}}
-COPY --from=build /app/package.json /app/bun.lockb* ./
-COPY --from=build /app/node_modules ./node_modules
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/.next ./.next
 COPY --from=build /app/public ./public
 USER bun
@@ -196,6 +202,7 @@ services:
     ports:
       - "{{APP_PORT}}:{{APP_PORT}}"
 ```
+When documenting direct local runs without Compose, require `docker run --rm -p {{APP_PORT}}:{{APP_PORT}} {{PROJECT_NAME}}:local` so the app is reachable from the host.
 
 ### `.github/workflows/ci.yml`
 ```yaml
@@ -241,7 +248,7 @@ jobs:
 - Validate environment variables at startup.
 - Run the container as non-root (`USER bun`).
 - Treat `NO_DOCKER=yes` as explicit exception behavior.
-- Ensure `bun.lockb` exists before Docker build when using `--frozen-lockfile`.
+- Ensure `bun.lockb` is committed before Docker build; the Dockerfile copies it explicitly for deterministic `--frozen-lockfile` installs.
 
 ## Validation Checklist
 
@@ -255,6 +262,9 @@ bunx vitest run --coverage
 bun run build
 test -f bun.lockb
 docker build -t {{PROJECT_NAME}}:local .
+docker run --rm -d -p {{APP_PORT}}:{{APP_PORT}} --name {{PROJECT_NAME}}-smoke {{PROJECT_NAME}}:local
+curl http://localhost:{{APP_PORT}}/
+docker stop {{PROJECT_NAME}}-smoke
 docker compose up -d --build
 ```
 `local-no-docker` (`NO_DOCKER=yes`):
