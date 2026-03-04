@@ -20,6 +20,8 @@ Observability boundary examples:
 
 - Python data/PDF/Markdown RAG worker:
 `architect-python-uv-batch` + `addon-rag-ingestion-pipeline`
+- Python take-home extraction + validation assignment:
+`architect-python-uv-takehome`
 - Python legal PDF clause RAG worker:
 `architect-python-uv-batch` + `addon-rag-ingestion-pipeline` + `addon-docling-legal-chunk-embed`
 - Python API with auth and access control:
@@ -56,6 +58,90 @@ Observability boundary examples:
 `architect-next-prisma-bun-vector` (+ `addon-rag-ingestion-pipeline` when ingestion is needed)
 
 ## One Command + Prompt
+
+### Python take-home extraction + validation agent
+
+```bash
+npx skills add ajrlewis/ai-skills --skill architect-python-uv-takehome
+```
+
+```text
+Use architect-python-uv-takehome.
+Build a lightweight Python 3.12 take-home solution for a reinsurance submission extraction and validation assignment.
+This is a fixed-layout submission, not a production service. Do not add Docker, CI, auth, observability, or generic framework layers.
+
+The assignment repository layout is:
+.
+├── data
+│   └── submission
+│       ├── 2023_contract.md
+│       ├── 2024_contract.md
+│       └── 2024_terms.json
+├── examples
+│   ├── netherlands_contract.md
+│   └── netherlands_terms.json
+├── README.md
+└── schema
+    └── expected_output_schema.json
+
+Create the deliverable exactly as:
+solution/
+├── README.md
+├── pyproject.toml
+├── requirements.txt
+├── src/
+│   ├── extractor/
+│   ├── agent/
+│   ├── common/
+│   └── cli.py
+├── tests/
+└── output/
+    ├── extracted_terms.json
+    └── validation_report.md
+
+Implement the strongest practical architecture for a 3-4 hour take-home:
+- deterministic extractor first
+- deterministic schema validation and reference diff second
+- optional LLM-powered explanation layer last
+
+Part 1 requirements:
+- read `data/submission/2024_contract.md`
+- extract normalized terms into `solution/output/extracted_terms.json`
+- target the prompt's key sections first instead of scanning the entire contract naively
+- use `schema/expected_output_schema.json` as the contract for output shape
+- use `examples/netherlands_contract.md` and `examples/netherlands_terms.json` as the format example only
+
+Part 2 requirements:
+- build an LLM-powered validation agent that compares `solution/output/extracted_terms.json` to `data/submission/2024_terms.json`
+- the deterministic diff is the source of truth
+- the LLM layer explains discrepancies, likely causes, reviewer flags, and confidence
+- if no API key is present, keep the deterministic validation path fully working and emit a clear note that the narrative LLM layer is unavailable
+
+Quality bar for a top-tier submission:
+- code is easy to read and clearly separated by responsibility
+- the reviewer can run the happy path quickly
+- the README has a short copy-paste quickstart
+- tests cover schema validation, semantic diffing, and at least one end-to-end smoke path
+- the validation report distinguishes objective mismatches from interpretation notes
+- confidence scoring is included per field or per finding when practical
+
+CLI contract:
+- `uv run submission-agent extract`
+- `uv run submission-agent validate`
+- `uv run submission-agent run-all`
+
+Validation and grading path:
+1. Run extraction against `data/submission/2024_contract.md`.
+2. Validate `solution/output/extracted_terms.json` against `schema/expected_output_schema.json`.
+3. Compare against `data/submission/2024_terms.json` using a recursive semantic diff.
+4. Write a concise machine-readable diff summary and a reviewer-friendly `solution/output/validation_report.md`.
+5. Run tests and summarize what passed, what is deterministic, and what depends on optional LLM access.
+
+Position this as a focused assignment solution:
+- use the skill only as a setup accelerator
+- keep the extraction and validation logic concrete and assignment-specific
+- optimize for "easy to grade" over "architecturally impressive"
+```
 
 ### Python batch RAG (PDF + Markdown)
 
