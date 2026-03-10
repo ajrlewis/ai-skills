@@ -14,6 +14,7 @@ Base architect skills:
 - `architect-python-uv-batch`
 - `architect-python-uv-fastapi-sqlalchemy`
 - `architect-nextjs-bun-app`
+- `architect-nextjs-vercel-app`
 - `architect-next-prisma-bun-vector`
 
 Protocol architect skills:
@@ -99,6 +100,8 @@ UI skills:
 
 - If user asks for Python data processing or offline ingestion jobs:
   choose `architect-python-uv-batch`.
+- If the user explicitly asks for Vercel deployment or a Vercel-optimized Next.js baseline:
+  choose `architect-nextjs-vercel-app`.
 - If environment is constrained (missing package managers and/or no network):
   keep selected architecture, but explicitly return a degraded fallback mode and what cannot be verified yet.
 - Default to `production-default`. Docker is required by default across all runnable base architect skills.
@@ -200,6 +203,8 @@ For public `api` and `web` flows in `production-default` mode, append the runtim
   `architect-python-uv-fastapi-sqlalchemy` + `addon-observability-telemetry` + `addon-observability-python-structlog` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Next.js observability-first flow:
   `architect-nextjs-bun-app` + `addon-observability-telemetry` + `addon-observability-nextjs-pino` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
+- Next.js on Vercel baseline:
+  `architect-nextjs-vercel-app` + `addon-observability-nextjs-pino` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Next.js Nostr client:
   `architect-nextjs-bun-app` + `architect-nostr-intent-router` + `addon-nostr-client-nextjs` + `addon-nostr-nip-profile-selector` + `addon-decision-justification-ledger` + `addon-domain-semantic-adaptation` + `addon-deterministic-eval-suite` + `addon-human-pr-review-gate`
 - Next.js Nostr client with social feed UI:

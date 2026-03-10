@@ -26,7 +26,9 @@ Collect:
 
 1. Add package-backed logging dependencies:
 ```bash
+# Use the project's package manager (examples):
 bun add pino
+pnpm add pino
 ```
 - If the user explicitly wants a framework helper, add the narrowest compatible package instead of building custom request log plumbing.
 - If `TELEMETRY_MODE` includes metrics or traces, add the relevant OpenTelemetry packages instead of inventing custom instrumentation helpers.

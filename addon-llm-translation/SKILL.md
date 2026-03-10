@@ -28,7 +28,9 @@ Collect:
 1. Add dependencies:
 - Next.js:
 ```bash
+# Use the project's package manager (examples):
 bun add zod
+pnpm add zod
 ```
 - Python:
 ```bash

@@ -32,12 +32,16 @@ uv add langchain langchain-core langchain-community pydantic-settings tiktoken
 ```
 - Next.js:
 ```bash
+# Use the project's package manager (examples):
 bun add langchain zod
+pnpm add langchain zod
 ```
 - Provider packages (as needed):
 ```bash
 uv add langchain-openai langchain-anthropic langchain-ollama
+# Use the project's package manager (examples):
 bun add @langchain/openai @langchain/anthropic @langchain/ollama
+pnpm add @langchain/openai @langchain/anthropic @langchain/ollama
 ```
 
 2. Add files by architecture:
@@ -101,7 +105,9 @@ src/app/api/llm/chat/route.ts
 ```bash
 uv run ruff check . || true
 uv run mypy src || true
+# Use the project's package manager (examples):
 bun run lint || true
+pnpm run lint || true
 rg -n "langchain|outputText|provider" src
 ```
 - Manual checks:

@@ -33,7 +33,9 @@ uv add google-adk pydantic-settings
 ```
 - Next.js:
 ```bash
+# Use the project's package manager (examples):
 bun add @google/adk zod
+pnpm add @google/adk zod
 ```
 
 2. Add files by runtime:
@@ -97,7 +99,9 @@ src/app/api/agent/runs/route.ts
 ```bash
 uv run ruff check . || true
 uv run mypy src || true
+# Use the project's package manager (examples):
 bun run lint || true
+pnpm run lint || true
 rg -n "degraded|ALLOW_TOOLS|MAX_AGENT_STEPS|status" src || true
 ```
 - Manual checks:

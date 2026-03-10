@@ -99,8 +99,11 @@ export default function FileDropzone({ onFilesAccepted, accept }: FileDropzonePr
 
 
 ```bash
+# Use the project's package manager (examples):
 bun run lint
 bun run build
+pnpm run lint
+pnpm run build
 ```
 Fallback (`offline-smoke`):
 ```bash

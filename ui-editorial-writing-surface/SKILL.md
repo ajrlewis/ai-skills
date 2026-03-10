@@ -71,8 +71,11 @@ src/components/journal/publish-controls.tsx
 
 
 ```bash
+# Use the project's package manager (examples):
 bun run lint
 bun run build
+pnpm run lint
+pnpm run build
 ```
 Fallback (`offline-smoke`):
 ```bash

@@ -26,11 +26,15 @@ Collect:
 
 1. Add dependencies:
 ```bash
+# Use the project's package manager (examples):
 bun add ai zod
+pnpm add ai zod
 ```
 - Provider packages as needed:
 ```bash
+# Use the project's package manager (examples):
 bun add @ai-sdk/openai @ai-sdk/anthropic @ai-sdk/google @ai-sdk/xai
+pnpm add @ai-sdk/openai @ai-sdk/anthropic @ai-sdk/google @ai-sdk/xai
 ```
 
 2. Add files:
@@ -88,8 +92,11 @@ export const AiChatResponseSchema = z.object({
 
 
 ```bash
+# Use the project's package manager (examples):
 bun run lint
 bun run build
+pnpm run lint
+pnpm run build
 test -f src/app/api/ai/chat/route.ts
 rg -n "AiChatRequestSchema|AiChatResponseSchema|provider|model" src/lib/ai/schemas.ts
 ```

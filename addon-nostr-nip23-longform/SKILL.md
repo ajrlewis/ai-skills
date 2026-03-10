@@ -24,7 +24,9 @@ Collect:
 
 1. Add/confirm dependencies:
 ```bash
+# Use the project's package manager (examples):
 bun add nostr-tools zod
+pnpm add nostr-tools zod
 ```
 
 2. Add files:
@@ -97,8 +99,11 @@ export function buildNip23Tags(draft: LongFormDraft): string[][] {
 
 
 ```bash
+# Use the project's package manager (examples):
 bun run lint
 bun run build
+pnpm run lint
+pnpm run build
 ```
 Fallback (`offline-smoke`):
 ```bash

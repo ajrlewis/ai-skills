@@ -25,7 +25,9 @@ Collect:
 
 1. Add dependencies:
 ```bash
+# Use the project's package manager (examples):
 bun add nostr-tools zod
+pnpm add nostr-tools zod
 ```
 
 2. Add modules:
@@ -242,8 +244,11 @@ export async function POST(req: Request) {
 
 
 ```bash
+# Use the project's package manager (examples):
 bun run lint
 bun run build
+pnpm run lint
+pnpm run build
 ```
 - Manual checks:
 - Relay subscription returns events.

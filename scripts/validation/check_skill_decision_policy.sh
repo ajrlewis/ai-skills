@@ -4,6 +4,16 @@ set -euo pipefail
 ROOT="${1:-.}"
 status=0
 
+if command -v rg >/dev/null 2>&1; then
+  has() {
+    rg -q "$1" "$2"
+  }
+else
+  has() {
+    grep -qE "$1" "$2"
+  }
+fi
+
 while IFS= read -r -d '' dir; do
   skill_md="$dir/SKILL.md"
   base="$(basename "$dir")"
@@ -14,17 +24,17 @@ while IFS= read -r -d '' dir; do
     continue
   fi
 
-  if ! rg -q '^## Decision Justification Rule$' "$skill_md"; then
+  if ! has '^## Decision Justification Rule$' "$skill_md"; then
     echo "ERROR: $base missing '## Decision Justification Rule' section"
     status=1
   fi
 
-  if ! rg -q 'Every non-trivial decision must include a concrete justification\.' "$skill_md"; then
+  if ! has 'Every non-trivial decision must include a concrete justification\.' "$skill_md"; then
     echo "ERROR: $base missing mandatory decision-justification line"
     status=1
   fi
 
-  if ! rg -q 'If justification is missing, treat the task as incomplete and surface it as a blocker\.' "$skill_md"; then
+  if ! has 'If justification is missing, treat the task as incomplete and surface it as a blocker\.' "$skill_md"; then
     echo "ERROR: $base missing mandatory blocker rule"
     status=1
   fi
@@ -35,4 +45,3 @@ if [[ "$status" -eq 0 ]]; then
 fi
 
 exit "$status"
-

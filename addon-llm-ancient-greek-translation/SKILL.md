@@ -25,7 +25,9 @@ Collect:
 
 1. Add dependencies:
 ```bash
+# Use the project's package manager (examples):
 bun add zod
+pnpm add zod
 ```
 
 2. Add files:
@@ -81,8 +83,11 @@ export type AncientGreekResponse = z.infer<typeof AncientGreekResponseSchema>;
 
 
 ```bash
+# Use the project's package manager (examples):
 bun run lint
 bun run build
+pnpm run lint
+pnpm run build
 ```
 Fallback (`offline-smoke`):
 ```bash

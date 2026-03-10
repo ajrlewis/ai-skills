@@ -26,6 +26,7 @@ Base architect skills:
 - `architect-python-uv-batch`
 - `architect-python-uv-fastapi-sqlalchemy`
 - `architect-nextjs-bun-app`
+- `architect-nextjs-vercel-app`
 - `architect-next-prisma-bun-vector`
 
 Add-on skills:
