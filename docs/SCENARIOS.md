@@ -56,6 +56,8 @@ Observability boundary examples:
 `architect-nextjs-bun-app` + `addon-rag-ingestion-pipeline` + `ui-document-intake-dropzone`
 - Next.js + Prisma + pgvector:
 `architect-next-prisma-bun-vector` (+ `addon-rag-ingestion-pipeline` when ingestion is needed)
+- Employment checker (structured doc analysis; non-RAG by default):
+`architect-employment-checker-system` + `architect-python-uv-fastapi-sqlalchemy` + `architect-nextjs-bun-app` + `addon-object-storage-minio-s3` + `addon-async-jobs-celery-redis` + `addon-postgres-document-pipeline-schema` + `addon-pdf-preprocess-page-artifacts` + `addon-header-footer-cleanup` + `addon-jsonl-chunking-citations` + `addon-clause-extraction-citations` + `addon-range-rules-validation` + `addon-report-synthesis-audit` + `ui-employment-checker-console`
 
 ## One Command + Prompt
 
@@ -167,6 +169,56 @@ Use architect-python-uv-batch, addon-rag-ingestion-pipeline, and addon-docling-l
 Scaffold a Python worker that converts legal PDFs to markdown with Docling, chunks by clause/section, and writes embedding-ready index records with citations.
 Mode: production-default with Docker artifacts.
 Run validation and report outcomes.
+```
+
+### Employment checker (Next.js + FastAPI + worker + Postgres + MinIO)
+
+```bash
+npx skills add ajrlewis/ai-skills \
+  --skill architect-employment-checker-system \
+  --skill architect-python-uv-fastapi-sqlalchemy \
+  --skill architect-nextjs-bun-app \
+  --skill addon-object-storage-minio-s3 \
+  --skill addon-async-jobs-celery-redis \
+  --skill addon-postgres-document-pipeline-schema \
+  --skill addon-pdf-preprocess-page-artifacts \
+  --skill addon-header-footer-cleanup \
+  --skill addon-jsonl-chunking-citations \
+  --skill addon-clause-extraction-citations \
+  --skill addon-range-rules-validation \
+  --skill addon-report-synthesis-audit \
+  --skill ui-employment-checker-console \
+  --skill addon-decision-justification-ledger \
+  --skill addon-deterministic-eval-suite \
+  --skill addon-human-pr-review-gate \
+  --skill addon-observability-python-structlog \
+  --skill addon-observability-nextjs-pino
+```
+
+```text
+Use architect-employment-checker-system and all installed add-ons above.
+Mode: production-default (Docker required).
+
+Scaffold a monorepo with:
+- `frontend/` (Next.js UI)
+- `backend/` (FastAPI API + worker codebase; single Python image used by api+worker)
+- root `docker-compose.yml` that runs: frontend, api, worker, postgres, redis, minio (plus an idempotent bucket-init step)
+
+System requirements:
+- `POST /documents/upload` stores raw PDF to MinIO, creates `documents` + `jobs`, enqueues Celery task, returns `202` with `job_id` (+ `document_id`).
+- Use Celery + Redis for background processing (do not implement RQ in this scaffold).
+- All heavy processing happens in workers (no inline PDF processing in request handlers).
+- Postgres is the system-of-record with tables: documents, jobs, document_pages (raw+clean), document_chunks (with spans), extracted_clauses, validations, reports.
+- Object storage keys follow: `documents/raw/{document_id}.pdf`, `documents/jsonl/{document_id}.jsonl`, `documents/reports/{document_id}.json` (and optional markdown).
+- Preserve exact page/chunk/span citation metadata through extraction, validation, and report synthesis.
+- Do not add vector search / RAG as a foundation.
+
+Include:
+- background pipeline stages: preprocess -> header/footer cleanup -> JSONL chunking -> clause extraction -> Range validation -> report synthesis
+- job status polling endpoint `GET /jobs/{job_id}`
+- UI: upload, job status, pages (raw/clean toggle), clauses+validations table, results view, and a basic review queue for `review_needed=true`.
+
+Run the project's smoke checks (build/lint/tests as available) and summarize what passed.
 ```
 
 ### FastAPI + LangChain LLM
